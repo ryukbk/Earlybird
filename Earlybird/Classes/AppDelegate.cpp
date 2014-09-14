@@ -13,16 +13,16 @@ AppDelegate::~AppDelegate()
 bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
-    auto eglView = EGLView::getInstance();
+    auto glview = director->getOpenGLView();
 
-    director->setOpenGLView(eglView);
-	eglView->setDesignResolutionSize(288,512, ResolutionPolicy::SHOW_ALL);
+    director->setOpenGLView(glview);
+	glview->setDesignResolutionSize(288,512, ResolutionPolicy::SHOW_ALL);
 
 	// set the resource directory
 	this->setResourceSearchResolution();
 	
     // turn on display FPS
-    director->setDisplayStats(false);
+    director->setDisplayStats(true);
 
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0 / 60);
