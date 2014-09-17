@@ -58,7 +58,30 @@ bool GameLayer::init(){
 		auto contactListener = EventListenerPhysicsContact::create();
 		contactListener->onContactBegin = CC_CALLBACK_1(GameLayer::onContactBegin, this);
 		this->getEventDispatcher()->addEventListenerWithSceneGraphPriority(contactListener, this);
-		
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+		{
+			auto dispatcher = Director::getInstance()->getEventDispatcher();
+			auto listener = EventListenerKeyboard::create();
+
+			listener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event* event) {
+				auto str = String::createWithFormat("%c", keyCode);
+				_label->setString(str->getCString());
+			};
+
+			listener->onKeyReleased = [](EventKeyboard::KeyCode keyCode, Event* event) {
+				
+			};
+
+			dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
+
+			_label = LabelTTF::create("Push any key.", "Arial", 40);
+			_label->setPosition(Point(80.0f, 240.0f));
+			_label->setTag(1);
+			this->addChild(_label);
+		}
+#endif
+
 		return true;
 	}else {
 		return false;

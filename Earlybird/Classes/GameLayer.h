@@ -179,4 +179,9 @@ private:
 	bool onContactBegin(const PhysicsContact& contact);
 
 	void gameOver();
+
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+	cocos2d::LabelTTF* _label;
+#endif
+
 };
