@@ -65,8 +65,31 @@ bool GameLayer::init(){
 			auto listener = EventListenerKeyboard::create();
 
 			listener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event* event) {
-				auto str = String::createWithFormat("%c", keyCode);
-				_label->setString(str->getCString());
+				if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW) {
+					auto easeAction = EaseOut::create(MoveBy::create(2.0f, Point(0, 20)), 2.5f);
+					for (auto singlePip : this->pips) {
+						auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_RUNNING));
+						if (currentAction) {
+							currentAction->stop();
+						}
+
+						auto c = easeAction->clone();
+						c->setTag(static_cast<TagType>(Tags::TAG_TWEEN_RUNNING));
+						singlePip->runAction(c);
+					}
+
+				} else if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW) {
+					auto easeAction = EaseOut::create(MoveBy::create(2.0f, Point(0, -20)), 2.5f);
+					for (auto singlePip : this->pips) {
+						auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_RUNNING));
+						if (currentAction) {
+							currentAction->stop();
+						}
+
+						auto c = easeAction->clone();
+						singlePip->runAction(c);
+					}
+				}
 			};
 
 			listener->onKeyReleased = [](EventKeyboard::KeyCode keyCode, Event* event) {
@@ -74,11 +97,6 @@ bool GameLayer::init(){
 			};
 
 			dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
-
-			_label = LabelTTF::create("Push any key.", "Arial", 40);
-			_label->setPosition(Point(80.0f, 240.0f));
-			_label->setTag(1);
-			this->addChild(_label);
 		}
 #endif
 

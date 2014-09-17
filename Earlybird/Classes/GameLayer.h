@@ -47,7 +47,7 @@ const float PIP_SHIFT_SPEED = 80.0f;
 /**
  * The distance between the down pip and up pip
  */
-const int PIP_DISTANCE = 100;
+const int PIP_DISTANCE = 150;
 
 /**
  * The distance between the pips vertical
@@ -75,6 +75,12 @@ typedef enum _game_status {
 	GAME_STATUS_START,
 	GAME_STATUS_OVER
 } GameStatus;
+
+enum class Tags : int {
+	TAG_TWEEN_RUNNING = 20000,
+};
+
+typedef std::underlying_type<Tags>::type TagType;
 
 class StatusDelegate {
 public:
@@ -179,9 +185,4 @@ private:
 	bool onContactBegin(const PhysicsContact& contact);
 
 	void gameOver();
-
-#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
-	cocos2d::LabelTTF* _label;
-#endif
-
 };
