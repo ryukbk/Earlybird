@@ -14,6 +14,13 @@ bool AppDelegate::applicationDidFinishLaunching() {
     // initialize director
     auto director = Director::getInstance();
     auto glview = director->getOpenGLView();
+	if (!glview) {
+#if (CC_TARGET_PLATFORM == CC_PLATFORM_WIN32)
+		glview = GLView::createWithRect("Early Bird", Rect(0, 0, 600, 400), 1);
+#else
+		glview = GLView::create("Early Bird");
+#endif
+	}
 
     director->setOpenGLView(glview);
 	glview->setDesignResolutionSize(288,512, ResolutionPolicy::SHOW_ALL);
