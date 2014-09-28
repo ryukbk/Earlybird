@@ -47,7 +47,7 @@ const float PIP_SHIFT_SPEED = 80.0f;
 /**
  * The distance between the down pip and up pip
  */
-const int PIP_DISTANCE = 150;
+const int PIP_DISTANCE = 140;
 
 /**
  * The distance between the pips vertical
@@ -77,7 +77,8 @@ typedef enum _game_status {
 } GameStatus;
 
 enum class Tags : int {
-	TAG_TWEEN_RUNNING = 20000,
+	TAG_TWEEN_UP_RUNNING = 20000,
+	TAG_TWEEN_DOWN_RUNNING
 };
 
 typedef std::underlying_type<Tags>::type TagType;

@@ -66,34 +66,44 @@ bool GameLayer::init(){
 
 			listener->onKeyPressed = [&](EventKeyboard::KeyCode keyCode, Event* event) {
 				if (keyCode == EventKeyboard::KeyCode::KEY_UP_ARROW) {
-					auto easeAction = EaseOut::create(MoveBy::create(2.0f, Point(0, 20)), 2.5f);
 					for (auto singlePip : this->pips) {
-						auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_RUNNING));
+						auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
+						if (currentAction) {
+							continue;
+						}
+						currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
 						if (currentAction) {
 							currentAction->stop();
 						}
 
-						auto c = easeAction->clone();
-						c->setTag(static_cast<TagType>(Tags::TAG_TWEEN_RUNNING));
-						singlePip->runAction(c);
+						const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(UP_PIP)->getPosition());
+						auto easeAction = EaseOut::create(MoveBy::create(3.0f, Point(0, PIP_HEIGHT - PIP_DISTANCE - absolutePos.y)), 1.5f);
+						easeAction->setTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
+						singlePip->runAction(easeAction);
 					}
-
 				} else if (keyCode == EventKeyboard::KeyCode::KEY_DOWN_ARROW) {
-					auto easeAction = EaseOut::create(MoveBy::create(2.0f, Point(0, -20)), 2.5f);
 					for (auto singlePip : this->pips) {
-						auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_RUNNING));
+						auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
+						if (currentAction) {
+							continue;
+						}
+						currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
 						if (currentAction) {
 							currentAction->stop();
 						}
 
-						auto c = easeAction->clone();
-						singlePip->runAction(c);
+						const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(DOWN_PIP)->getPosition());
+						auto easeAction = EaseOut::create(MoveBy::create(3.0f, Point(0, PIP_HEIGHT + PIP_DISTANCE - absolutePos.y)), 1.5f);
+						easeAction->setTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
+						singlePip->runAction(easeAction);
 					}
 				}
 			};
 
-			listener->onKeyReleased = [](EventKeyboard::KeyCode keyCode, Event* event) {
-				
+			listener->onKeyReleased = [&](EventKeyboard::KeyCode keyCode, Event* event) {
+				for (auto singlePip : this->pips) {
+					singlePip->stopAllActions();
+				}
 			};
 
 			dispatcher->addEventListenerWithSceneGraphPriority(listener, this);
