@@ -13,7 +13,8 @@ using namespace cocos2d;
 class OptionDelegate
 {
 public:
-    virtual void onTouch() = 0;
+	virtual void onTouch(const std::vector<Touch*>& touches) = 0;
+	virtual void onTouchEnded(const std::vector<Touch*>& touches) = 0;
 };
 
 class OptionLayer:public Layer
@@ -27,6 +28,7 @@ public:
     
     // override
     void onTouchesBegan(const std::vector<Touch*>& touches, Event *event);
+	void onTouchesEnded(const std::vector<Touch*>& touches, Event *event);
     
     CC_SYNTHESIZE(OptionDelegate*, delegator, Delegator);
 };

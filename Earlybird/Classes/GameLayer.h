@@ -122,7 +122,8 @@ public:
 	* User have touched the screen
 	* This game, user just need only this method to control game
 	*/
-	void onTouch();
+	void onTouch(const std::vector<Touch*>& touches);
+	void onTouchEnded(const std::vector<Touch*>& touches);
 
 	/**
 	* This layer need physical engine work

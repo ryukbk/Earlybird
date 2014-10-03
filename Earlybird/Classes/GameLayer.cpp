@@ -5,7 +5,7 @@ GameLayer::GameLayer(){}
 GameLayer::~GameLayer(){}
 
 bool GameLayer::init(){
-	if(Layer::init()) {
+	if (Layer::init()) {
 		//get the origin point of the X-Y axis, and the visiable size of the screen
 		Size visiableSize = Director::getInstance()->getVisibleSize();
 		Point origin = Director::getInstance()->getVisibleOrigin();
@@ -17,43 +17,43 @@ bool GameLayer::init(){
 		this->bird = BirdSprite::getInstance();
 		this->bird->createBird();
 		PhysicsBody *body = PhysicsBody::create();
-        body->addShape(PhysicsShapeCircle::create(BIRD_RADIUS));
-        body->setDynamic(true);
+		body->addShape(PhysicsShapeCircle::create(BIRD_RADIUS));
+		body->setDynamic(true);
 		body->setLinearDamping(0.0f);
 		body->setGravityEnable(false);
-        body->setContactTestBitmask(0x00000001);
+		body->setContactTestBitmask(0x00000001);
 		this->bird->setPhysicsBody(body);
-		this->bird->setPosition(origin.x + visiableSize.width*1/3 - 5,origin.y + visiableSize.height/2 + 5);
+		this->bird->setPosition(origin.x + visiableSize.width * 1 / 3 - 5, origin.y + visiableSize.height / 2 + 5);
 		this->bird->idle();
 		this->addChild(this->bird);
-        
-        // Add the ground
-        this->groundNode = Node::create();
-        float landHeight = BackgroundLayer::getLandHeight();
-        auto groundBody = PhysicsBody::create();
-        groundBody->addShape(PhysicsShapeBox::create(Size(288, landHeight)));
-        groundBody->setDynamic(false);
-        groundBody->setLinearDamping(0.0f);
-        groundBody->setContactTestBitmask(0x00000001);
-        this->groundNode->setPhysicsBody(groundBody);
-        this->groundNode->setPosition(144, landHeight/2);
-        this->addChild(this->groundNode);
-        
-        // init land
-        this->landSpite1 = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("land"));
-        this->landSpite1->setAnchorPoint(Point::ZERO);
-        this->landSpite1->setPosition(Point::ZERO);
-        this->addChild(this->landSpite1, 30);
-        
-        this->landSpite2 = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("land"));
-        this->landSpite2->setAnchorPoint(Point::ZERO);
-        this->landSpite2->setPosition(this->landSpite1->getContentSize().width-2.0f,0);
-        this->addChild(this->landSpite2, 30);
-        
+
+		// Add the ground
+		this->groundNode = Node::create();
+		float landHeight = BackgroundLayer::getLandHeight();
+		auto groundBody = PhysicsBody::create();
+		groundBody->addShape(PhysicsShapeBox::create(Size(288, landHeight)));
+		groundBody->setDynamic(false);
+		groundBody->setLinearDamping(0.0f);
+		groundBody->setContactTestBitmask(0x00000001);
+		this->groundNode->setPhysicsBody(groundBody);
+		this->groundNode->setPosition(144, landHeight / 2);
+		this->addChild(this->groundNode);
+
+		// init land
+		this->landSpite1 = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("land"));
+		this->landSpite1->setAnchorPoint(Point::ZERO);
+		this->landSpite1->setPosition(Point::ZERO);
+		this->addChild(this->landSpite1, 30);
+
+		this->landSpite2 = Sprite::createWithSpriteFrame(AtlasLoader::getInstance()->getSpriteFrameByName("land"));
+		this->landSpite2->setAnchorPoint(Point::ZERO);
+		this->landSpite2->setPosition(this->landSpite1->getContentSize().width - 2.0f, 0);
+		this->addChild(this->landSpite2, 30);
+
 		shiftLand = schedule_selector(GameLayer::scrollLand);
-        this->schedule(shiftLand, 0.01f);
-        
-        this->scheduleUpdate();
+		this->schedule(shiftLand, 0.01f);
+
+		this->scheduleUpdate();
 
 		auto contactListener = EventListenerPhysicsContact::create();
 		contactListener->onContactBegin = CC_CALLBACK_1(GameLayer::onContactBegin, this);
@@ -140,10 +140,12 @@ void GameLayer::scrollLand(float dt){
     }
 }
 
-void GameLayer::onTouch() {
+void GameLayer::onTouch(const std::vector<Touch*>& touches) {
 	if(this->gameStatus == GAME_STATUS_OVER) {
 		return;
 	}
+
+	CCLOG("onTouch");
 
 	SimpleAudioEngine::getInstance()->playEffect("sfx_wing.ogg");
 	if(this->gameStatus == GAME_STATUS_READY) {
@@ -154,6 +156,10 @@ void GameLayer::onTouch() {
 	}else if(this->gameStatus == GAME_STATUS_START) {
 		this->bird->getPhysicsBody()->setVelocity(Vect(0, 260));
 	}
+}
+
+void GameLayer::onTouchEnded(const std::vector<Touch*>& touches) {
+	CCLOG("onTouchEnded");
 }
 
 void GameLayer::rotateBird() {
