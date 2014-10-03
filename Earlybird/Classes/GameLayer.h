@@ -177,6 +177,8 @@ private:
     Node *groundNode;
     
     vector<Node *> pips;
+  
+  Point touchStartPosition;
     
     Sprite *landSpite1,*landSpite2;
 
