@@ -169,33 +169,43 @@ void GameLayer::onTouchEnded(const std::vector<Touch*>& touches) {
     
     if (y < 0) {
         for (auto singlePip : this->pips) {
+            const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(DOWN_PIP)->getPosition());
+            if (PIP_HEIGHT + PIP_DISTANCE > absolutePos.y) {
+                continue;
+            }
+            
             auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
             if (currentAction) {
                 continue;
             }
             currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
             if (currentAction) {
-                currentAction->stop();
+                // For some reason currentAction->stop() doesn't work as expected
+                singlePip->stopAllActions();
             }
-            
-            const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(DOWN_PIP)->getPosition());
-            auto easeAction = EaseOut::create(MoveBy::create(3.0f, Point(0, PIP_HEIGHT + PIP_DISTANCE - absolutePos.y)), 1.5f);
+
+            auto easeAction = EaseOut::create(MoveBy::create(3.0f, Point(0, -150)), 2.0f);
             easeAction->setTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
             singlePip->runAction(easeAction);
         }
     } else {
         for (auto singlePip : this->pips) {
+            const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(UP_PIP)->getPosition());
+            if (PIP_HEIGHT - PIP_DISTANCE < absolutePos.y) {
+                continue;
+            }
+            
             auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
             if (currentAction) {
                 continue;
             }
             currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
             if (currentAction) {
-                currentAction->stop();
+                // For some reason currentAction->stop() doesn't work as expected
+                singlePip->stopAllActions();
             }
-            
-            const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(UP_PIP)->getPosition());
-            auto easeAction = EaseOut::create(MoveBy::create(3.0f, Point(0, PIP_HEIGHT - PIP_DISTANCE - absolutePos.y)), 1.5f);
+
+            auto easeAction = EaseOut::create(MoveBy::create(3.0f, Point(0, 150)), 2.0f);
             easeAction->setTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
             singlePip->runAction(easeAction);
         }
@@ -212,6 +222,36 @@ void GameLayer::update(float delta) {
     if (this->gameStatus == GAME_STATUS_START) {
         this->rotateBird();
 		this->checkHit();
+    }
+
+    for (auto singlePip : this->pips) {
+        bool goingUp = false;
+        auto currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_UP_RUNNING));
+        if (currentAction) {
+            goingUp = true;
+        }
+        currentAction = singlePip->getActionByTag(static_cast<TagType>(Tags::TAG_TWEEN_DOWN_RUNNING));
+        if (currentAction) {
+            goingUp = false;
+        } else {
+            if (!goingUp) {
+                continue;
+            }
+        }
+        
+        if (goingUp) {
+            const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(UP_PIP)->getPosition());
+            if (PIP_HEIGHT - PIP_DISTANCE < absolutePos.y) {
+                CCLOG("Stop UP");
+                singlePip->stopAllActions();
+            }
+        } else {
+            const Point absolutePos = singlePip->convertToWorldSpace(singlePip->getChildByTag(DOWN_PIP)->getPosition());
+            if (PIP_HEIGHT + PIP_DISTANCE > absolutePos.y) {
+                CCLOG("Stop DOWN");
+                singlePip->stopAllActions();
+            }
+        }
     }
 }
 
